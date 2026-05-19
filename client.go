@@ -14,17 +14,23 @@ import (
 )
 
 func buildHttpClient(wc *WrappedClient) *http.Client {
+	transport := &http.Transport{}
+	if wc.transport != nil {
+		transport = wc.transport.Clone()
+	}
+	if wc.tlsConfig != nil {
+		transport.TLSClientConfig = wc.tlsConfig
+	}
+	transport.DialContext = (&net.Dialer{
+		Resolver: wc.resolver,
+		Control:  buildRunFunc(wc),
+	}).DialContext
+
 	client := &http.Client{
 		Timeout:       wc.config.Timeout,
 		CheckRedirect: wc.config.CheckRedirect,
 		Jar:           wc.config.Jar,
-		Transport: &http.Transport{
-			TLSClientConfig: wc.tlsConfig,
-			DialContext: (&net.Dialer{
-				Resolver: wc.resolver,
-				Control:  buildRunFunc(wc),
-			}).DialContext,
-		},
+		Transport:     transport,
 	}
 
 	return client
@@ -120,6 +126,7 @@ type WrappedClient struct {
 	Client *http.Client
 
 	config    *Config
+	transport *http.Transport
 	tlsConfig *tls.Config
 	resolver  *net.Resolver
 
@@ -129,6 +136,7 @@ type WrappedClient struct {
 
 func Client(config *Config) *WrappedClient {
 	tlsConfig := config.TlsConfig
+	transport := config.Transport
 
 	var resolver *net.Resolver = nil
 	if config.InTestMode {
@@ -143,6 +151,7 @@ func Client(config *Config) *WrappedClient {
 
 	wc := &WrappedClient{
 		config:    config,
+		transport: transport,
 		tlsConfig: tlsConfig,
 		resolver:  resolver,
 	}

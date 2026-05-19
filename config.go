@@ -30,6 +30,7 @@ type configBuilder struct {
 	inTestMode bool
 
 	tlsConfig *tls.Config
+	transport *http.Transport
 }
 
 type Config struct {
@@ -57,6 +58,7 @@ type Config struct {
 	InTestMode            bool
 
 	TlsConfig *tls.Config
+	Transport *http.Transport
 }
 
 func GetConfigBuilder() *configBuilder {
@@ -74,6 +76,7 @@ func GetConfigBuilder() *configBuilder {
 		isDebugLoggingEnabled: false,
 		inTestMode:            false,
 		tlsConfig:             nil,
+		transport:             nil,
 	}
 }
 
@@ -152,6 +155,15 @@ func (cb *configBuilder) SetTlsConfig(tlsConfig *tls.Config) *configBuilder {
 	return cb
 }
 
+// SetTransport provides an http.Transport to the underlying client.
+// The transport's DialContext will be overriden by safeurl.
+// If both SetTransport and SetTLSConfig are called, then the TLSConfig will be
+// set on the transport as part of constructing the client.
+func (cb *configBuilder) SetTransport(transport *http.Transport) *configBuilder {
+	cb.transport = transport
+	return cb
+}
+
 func (cb *configBuilder) Build() *Config {
 	wc := &Config{
 		Timeout:       cb.timeout,
@@ -164,6 +176,7 @@ func (cb *configBuilder) Build() *Config {
 		IsDebugLoggingEnabled: cb.isDebugLoggingEnabled,
 		InTestMode:            cb.inTestMode,
 		TlsConfig:             cb.tlsConfig,
+		Transport:             cb.transport,
 	}
 
 	if cb.allowedSchemes == nil {
