@@ -155,10 +155,10 @@ func (cb *configBuilder) SetTlsConfig(tlsConfig *tls.Config) *configBuilder {
 	return cb
 }
 
-// SetTransport provides an http.Transport to the underlying client.
-// The transport's DialContext will be overriden by safeurl.
+// SetTransport provides an `http.Transport` to the underlying client.
+// The transport's DialContext will be overridden by safeurl.
 // If both SetTransport and SetTLSConfig are called, then the TLSConfig will be
-// set on the transport as part of constructing the client.
+// set on the transport instance as part of constructing the client.
 func (cb *configBuilder) SetTransport(transport *http.Transport) *configBuilder {
 	cb.transport = transport
 	return cb
