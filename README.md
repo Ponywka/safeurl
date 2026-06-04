@@ -16,8 +16,12 @@ BlockedCIDR                     - list of CIDR ranges the application is not all
 IsIPv6Enabled                   - specifies wether communication through IPv6 is enabled
 AllowSendingCredentials         - specifies wether HTTP credentials should be sent
 
+Custom `http.Transport`          - allows callers to configure a custom implementation `http.Transport` for the library
+
 IsDebugLoggingEnabled          - enables debug logs
 ```
+**Note**: Instances of `http.Transport` passed to `SetTransport` will cause a `panic()` if they define custom implementations for: `Dial`, `DialTLS` or `DialTLSContext`.
+
 ### How to use the safeurl.Client?
 First, you need to include the `safeurl` module. To do that, simply add `github.com/doyensec/safeurl` to your project's `go.mod` file.
 

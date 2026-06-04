@@ -1,8 +1,10 @@
 package safeurl
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
+	"net"
 	"net/http"
 	"testing"
 )
@@ -495,4 +497,54 @@ func TestInvalidHostValidation(t *testing.T) {
 		}
 	}
 
+}
+
+func TestConfigTransportWithCustomDialPanics(t *testing.T) {
+	cases := []struct {
+		name      string
+		transport *http.Transport
+	}{
+		{
+			name: "DialTLSContext",
+			transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return nil, fmt.Errorf("should never be called")
+				},
+			},
+		},
+		{
+			name: "DialTLS",
+			transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				DialTLS: func(network, addr string) (net.Conn, error) {
+					return nil, fmt.Errorf("should never be called")
+				},
+			},
+		},
+		{
+			name: "Dial",
+			transport: &http.Transport{
+				Dial: func(network, addr string) (net.Conn, error) {
+					return nil, fmt.Errorf("should never be called")
+				},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r == nil {
+					t.Errorf("expected panic when transport sets %s, got none", tc.name)
+				}
+			}()
+
+			cfg := GetConfigBuilder().
+				SetTransport(tc.transport).
+				Build()
+
+			_ = Client(cfg)
+		})
+	}
 }

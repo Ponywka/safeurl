@@ -16,6 +16,15 @@ import (
 func buildHttpClient(wc *WrappedClient) *http.Client {
 	transport := &http.Transport{}
 	if wc.transport != nil {
+		if wc.transport.Dial != nil {
+			panic("custom `Dial` not supported")
+		}
+		if wc.transport.DialTLS != nil {
+			panic("custom `DialTLS` not supported")
+		}
+		if wc.transport.DialTLSContext != nil {
+			panic("custom `DialTLSContext` not supported")
+		}
 		transport = wc.transport.Clone()
 	}
 	if wc.tlsConfig != nil {
