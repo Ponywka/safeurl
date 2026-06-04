@@ -25,20 +25,24 @@ var privateNetworks = []net.IPNet{
 	parseCIDR("255.255.255.255/32"), /* Broadcast - RFC 919, Section 7 */
 	parseCIDR("100.64.0.0/10"),      /* Shared Address Space - RFC 6598 */
 	// ipv6 sourced from https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml
-	parseCIDR("::/128"),        /* Unspecified Address - RFC 4291 */
-	parseCIDR("::1/128"),       /* Loopback - RFC 4291 */
-	parseCIDR("100::/64"),      /* Discard prefix - RFC 6666 */
-	parseCIDR("2001::/23"),     /* IETF Protocol Assignments - RFC 2928 */
-	parseCIDR("2001:2::/48"),   /* Benchmarking - RFC5180 */
-	parseCIDR("2001:db8::/32"), /* Addresses used in documentation and example source code - RFC 3849 */
-	parseCIDR("2001::/32"),     /* Teredo tunneling - RFC4380 - RFC8190 */
-	parseCIDR("fc00::/7"),      /* Unique local address - RFC 4193 - RFC 8190 */
-	parseCIDR("fe80::/10"),     /* Link-local address - RFC 4291 */
-	parseCIDR("ff00::/8"),      /* Multicast - RFC 3513 */
-	parseCIDR("2002::/16"),     /* 6to4 - RFC 3056 */
-	parseCIDR("64:ff9b::/96"),  /* IPv4/IPv6 translation - RFC 6052 */
-	parseCIDR("2001:10::/28"),  /* Deprecated (previously ORCHID) - RFC 4843 */
-	parseCIDR("2001:20::/28"),  /* ORCHIDv2 - RFC7343 */
+	parseCIDR("::/128"),         /* Unspecified Address - RFC 4291 */
+	parseCIDR("::1/128"),        /* Loopback - RFC 4291 */
+	parseCIDR("100::/64"),       /* Discard prefix - RFC 6666 */
+	parseCIDR("2001::/23"),      /* IETF Protocol Assignments - RFC 2928 */
+	parseCIDR("2001:2::/48"),    /* Benchmarking - RFC5180 */
+	parseCIDR("2001:db8::/32"),  /* Addresses used in documentation and example source code - RFC 3849 */
+	parseCIDR("2001::/32"),      /* Teredo tunneling - RFC4380 - RFC8190 */
+	parseCIDR("fc00::/7"),       /* Unique local address - RFC 4193 - RFC 8190 */
+	parseCIDR("fe80::/10"),      /* Link-local address - RFC 4291 */
+	parseCIDR("ff00::/8"),       /* Multicast - RFC 3513 */
+	parseCIDR("2002::/16"),      /* 6to4 - RFC 3056 */
+	parseCIDR("64:ff9b::/96"),   /* IPv4/IPv6 translation - RFC 6052 */
+	parseCIDR("64:ff9b:1::/48"), /* IPv4-IPv6 Translat. */
+	parseCIDR("5f00::/16"),      /*  Segment Routing (SRv6) SIDs */
+	parseCIDR("2001:10::/28"),   /* Deprecated (previously ORCHID) - RFC 4843 */
+	parseCIDR("2001:20::/28"),   /* ORCHIDv2 - RFC7343 */
+	parseCIDR("3fff::/20"),      /* Documentation */
+	parseCIDR("100:0:0:1::/64"), /* Dummy IPv6 Prefix */
 }
 
 func parseCIDR(network string) net.IPNet {

@@ -27,6 +27,14 @@ func TestBlockedIP(t *testing.T) {
 		"[::ffff:192.0.2.1]",
 		// ipv6
 		"[::]:80", "[0000::1]:80", "[::1]/server-status",
+		// ipv6 -> 169.254.169.254 translation (nat64 local-use prefix)
+		"[64:ff9b:1::a9fe:a9fe]",
+		// segment routing
+		"[5f00:5aa9:e79f:8940:a51a:be61:ef3b:bab9]",
+		// documentation
+		"[3fff:4e1:6fb3:f8a2:7948:ff06:258:486]",
+		// ipv6 dummy prefix
+		"[100::1:a442:286a:836e:da87]",
 	}
 
 	for _, ip := range ips {
