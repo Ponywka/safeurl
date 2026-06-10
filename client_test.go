@@ -558,7 +558,7 @@ func TestConfigTransportWithCustomDialPanics(t *testing.T) {
 	}
 }
 
-func TestBuildRunFunc_invalidAddressFormatReturnsError(t *testing.T) {
+func TestInvalidAddressFormatReturnsError(t *testing.T) {
 	wc := &WrappedClient{config: GetConfigBuilder().Build()}
 	run := buildRunFunc(wc)
 
