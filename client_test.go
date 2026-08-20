@@ -220,6 +220,30 @@ func TestBlockedHost(t *testing.T) {
 	}
 }
 
+func TestRedirectToDisallowedHostIsBlocked(t *testing.T) {
+	host := "service.test"
+
+	cfg := GetConfigBuilder().
+		SetAllowedHosts(host).
+		Build()
+
+	client := Client(cfg)
+
+	redirectReq, err := http.NewRequest("GET", "http://evil.test", nil)
+	if err != nil {
+		t.Fatalf("failed to build redirect request: %v", err)
+	}
+
+	err = client.Client.CheckRedirect(redirectReq, nil)
+	if err == nil {
+		t.Fatalf("redirect to disallowed host not blocked")
+	}
+	_, ok := err.(*AllowedHostError)
+	if !ok {
+		t.Errorf("client returned incorrect error: %v", err)
+	}
+}
+
 func TestAllowedScheme(t *testing.T) {
 	scheme := "http"
 	host := "service.test"

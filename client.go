@@ -3,6 +3,7 @@ package safeurl
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -37,7 +38,7 @@ func buildHttpClient(wc *WrappedClient) *http.Client {
 
 	client := &http.Client{
 		Timeout:       wc.config.Timeout,
-		CheckRedirect: wc.config.CheckRedirect,
+		CheckRedirect: wc.checkRedirect,
 		Jar:           wc.config.Jar,
 		Transport:     transport,
 	}
@@ -146,6 +147,43 @@ type WrappedClient struct {
 
 	// used for track DNS resolutions for testing purposes
 	tracer *tracer
+}
+
+func (wc *WrappedClient) checkRedirect(req *http.Request, via []*http.Request) error {
+	url := req.URL.String()
+
+	parsedURL, err := urllib.Parse(url)
+
+	if err != nil {
+		return err
+	}
+
+	err = validateCredentials(parsedURL, wc.config, wc.log)
+	if err != nil {
+		return err
+	}
+
+	err = isSchemeValid(parsedURL, wc.config, wc.log)
+	if err != nil {
+		return err
+	}
+
+	err = isHostValid(parsedURL, wc.config, wc.log)
+	if err != nil {
+		return err
+	}
+
+	if wc.config.CheckRedirect != nil {
+		return wc.config.CheckRedirect(req, via)
+	}
+
+	// mirrors net/http's own defaultCheckRedirect, so behavior stays
+	// unchanged for callers who don't set a custom CheckRedirect
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+
+	return nil
 }
 
 func Client(config *Config) *WrappedClient {
